@@ -58,7 +58,7 @@ export default function App() {
         (completed, total) => setMergeState({ status: 'merging', completed, total }),
       )
       const stamp = new Date().toISOString().slice(0, 10)
-      const filename = `collate-${stamp}.pdf`
+      const filename = `merged-${stamp}.pdf`
       downloadPdf(bytes, filename)
       setMergeState({ status: 'done', filename })
     } catch (err) {
@@ -77,11 +77,7 @@ export default function App() {
       <div className="atmosphere" aria-hidden="true" />
 
       <header className="hero">
-        <p className="brand">Collate</p>
-        <h1 className="hero__headline">Merge unlimited PDFs.</h1>
-        <p className="hero__sub">
-          Drop in as many documents as you need — no 10-file cap. Everything runs in your browser.
-        </p>
+        <h1 className="brand">PDF Merger</h1>
       </header>
 
       <main className="workspace">
@@ -122,7 +118,7 @@ export default function App() {
             <div className="progress__track">
               <div className="progress__bar" style={{ width: `${progress}%` }} />
             </div>
-            <p className="progress__label">Combining documents… {progress}%</p>
+            <p className="progress__label">Merging… {progress}%</p>
           </div>
         )}
 
@@ -138,10 +134,6 @@ export default function App() {
           </p>
         )}
       </main>
-
-      <footer className="footer">
-        <p>Private by design — PDFs never leave this device.</p>
-      </footer>
     </div>
   )
 }

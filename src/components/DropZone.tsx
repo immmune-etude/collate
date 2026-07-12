@@ -103,9 +103,7 @@ export function DropZone({ onFilesAdded, disabled }: DropZoneProps) {
         <label htmlFor={inputId} className="dropzone__browse">
           browse files
         </label>
-        {' · '}no limit on count
       </p>
-      <p className="dropzone__meta">Files stay on your device · processed locally</p>
     </div>
   )
 }

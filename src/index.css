@@ -82,7 +82,7 @@ label {
 }
 
 .brand {
-  margin: 0 0 1rem;
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 8vw, 4.25rem);
   font-weight: 800;
@@ -92,23 +92,6 @@ label {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.hero__headline {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--fog);
-}
-
-.hero__sub {
-  margin: 0;
-  max-width: 34rem;
-  font-size: 1.05rem;
-  line-height: 1.55;
-  color: var(--mist);
 }
 
 .workspace {
@@ -229,12 +212,6 @@ label {
 
 .dropzone__browse:hover {
   color: #7aefc8;
-}
-
-.dropzone__meta {
-  margin: 0.65rem 0 0;
-  font-size: 0.8rem;
-  color: rgba(155, 180, 204, 0.75);
 }
 
 .file-list__header {
@@ -441,19 +418,6 @@ label {
   color: var(--danger);
 }
 
-.footer {
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
-  animation: rise 0.7s ease 0.22s both;
-}
-
-.footer p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: rgba(155, 180, 204, 0.7);
-}
-
 @media (max-width: 520px) {
   .file-row {
     grid-template-columns: auto 1fr auto;
@@ -478,7 +442,6 @@ label {
   .stack-sheet--3,
   .hero,
   .workspace,
-  .footer,
   .file-row {
     animation: none;
   }
