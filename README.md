@@ -2,7 +2,9 @@
 
 Merge an unlimited number of PDFs in your browser. Files never leave your device.
 
-## Run
+**Live:** [https://immmune-etude.github.io/collate/](https://immmune-etude.github.io/collate/)
+
+## Run locally
 
 ```bash
 npm install
@@ -22,6 +24,13 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 ```bash
 npm run build
 npm run preview
+```
+
+## Deploy
+
+```bash
+npm run build
+npx gh-pages -d dist
 ```
 
 ## Notes
