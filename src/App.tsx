@@ -3,7 +3,7 @@ import { DropZone } from './components/DropZone'
 import { FileList } from './components/FileList'
 import {
   downloadPdf,
-  mergePdfs,
+  mergeFiles,
   type PdfMeta,
 } from './lib/mergePdfs'
 
@@ -46,14 +46,17 @@ export default function App() {
   const handleMerge = useCallback(async () => {
     const valid = items.filter((item) => !item.error)
     if (valid.length === 0) {
-      setMergeState({ status: 'error', message: 'Add at least one readable PDF.' })
+      setMergeState({
+        status: 'error',
+        message: 'Add at least one readable PDF or JPEG.',
+      })
       return
     }
 
     setMergeState({ status: 'merging', completed: 0, total: valid.length })
 
     try {
-      const bytes = await mergePdfs(
+      const bytes = await mergeFiles(
         valid.map((item) => item.file),
         (completed, total) => setMergeState({ status: 'merging', completed, total }),
       )
@@ -108,7 +111,7 @@ export default function App() {
             >
               {busy
                 ? `Merging ${mergeState.status === 'merging' ? `${mergeState.completed}/${mergeState.total}` : '…'}`
-                : `Merge ${items.filter((i) => !i.error).length} PDF${items.filter((i) => !i.error).length === 1 ? '' : 's'}`}
+                : `Merge ${items.filter((i) => !i.error).length} file${items.filter((i) => !i.error).length === 1 ? '' : 's'}`}
             </button>
           </div>
         )}

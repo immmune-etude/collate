@@ -1,6 +1,6 @@
 import { useCallback, useId, useRef, useState } from 'react'
 import type { PdfMeta } from '../lib/mergePdfs'
-import { createPdfId, getPdfPageCount } from '../lib/mergePdfs'
+import { createPdfId, getFilePageCount } from '../lib/mergePdfs'
 
 type DropZoneProps = {
   onFilesAdded: (items: PdfMeta[]) => void
@@ -15,24 +15,41 @@ export function DropZone({ onFilesAdded, disabled }: DropZoneProps) {
 
   const ingest = useCallback(
     async (fileList: FileList | File[]) => {
-      const pdfs = Array.from(fileList).filter(
-        (f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'),
-      )
-      if (pdfs.length === 0) return
+      const supported = Array.from(fileList).filter((f) => {
+        const lower = f.name.toLowerCase()
+        return (
+          f.type === 'application/pdf' ||
+          f.type === 'image/jpeg' ||
+          lower.endsWith('.pdf') ||
+          lower.endsWith('.jpg') ||
+          lower.endsWith('.jpeg')
+        )
+      })
+      if (supported.length === 0) return
+
+      const withKind = supported.map((file) => {
+        const lower = file.name.toLowerCase()
+        const fileKind: PdfMeta['fileKind'] =
+          file.type === 'application/pdf' || lower.endsWith('.pdf') ? 'pdf' : 'jpeg'
+        return { file, fileKind }
+      })
+
+      if (withKind.length === 0) return
 
       setLoading(true)
       try {
         const items: PdfMeta[] = await Promise.all(
-          pdfs.map(async (file) => {
+          withKind.map(async ({ file, fileKind }) => {
             const id = createPdfId()
             try {
-              const pageCount = await getPdfPageCount(file)
+              const pageCount = await getFilePageCount(file)
               return {
                 id,
                 file,
                 name: file.name,
                 size: file.size,
                 pageCount,
+                fileKind,
               }
             } catch {
               return {
@@ -41,11 +58,12 @@ export function DropZone({ onFilesAdded, disabled }: DropZoneProps) {
                 name: file.name,
                 size: file.size,
                 pageCount: null,
-                error: 'Could not read this PDF',
+                fileKind,
+                error: `Could not read this ${fileKind.toUpperCase()}`,
               }
             }
           }),
-        )
+      )
         onFilesAdded(items)
       } finally {
         setLoading(false)
@@ -81,7 +99,7 @@ export function DropZone({ onFilesAdded, disabled }: DropZoneProps) {
         ref={inputRef}
         id={inputId}
         type="file"
-        accept="application/pdf,.pdf"
+        accept="application/pdf,image/jpeg,.pdf,.jpg,.jpeg"
         multiple
         hidden
         disabled={disabled || loading}
@@ -96,7 +114,7 @@ export function DropZone({ onFilesAdded, disabled }: DropZoneProps) {
         <span className="stack-sheet stack-sheet--3" />
       </div>
       <p className="dropzone__title">
-        {loading ? 'Reading PDFs…' : dragging ? 'Drop to add' : 'Drop PDFs here'}
+        {loading ? 'Reading files…' : dragging ? 'Drop to add' : 'Drop PDFs or JPEGs here'}
       </p>
       <p className="dropzone__hint">
         or{' '}

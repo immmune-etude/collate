@@ -1,5 +1,7 @@
 # PDF Merger
 
+Merge mixed `PDF`, `JPG`, and `JPEG` files, reorder them, and download one combined PDF.
+
 **Live:** [https://immmune-etude.github.io/collate/](https://immmune-etude.github.io/collate/)
 
 ## Run locally

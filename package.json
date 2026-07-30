@@ -2,6 +2,7 @@
   "name": "collate",
   "private": true,
   "version": "1.0.0",
+  "description": "Merge PDF and JPEG files into one combined PDF in the browser",
   "type": "module",
   "scripts": {
     "dev": "vite",

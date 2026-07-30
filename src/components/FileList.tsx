@@ -19,7 +19,7 @@ export function FileList({ items, onReorder, onRemove, disabled }: FileListProps
   const totalSize = items.reduce((sum, item) => sum + item.size, 0)
 
   return (
-    <section className="file-list" aria-label="PDF queue">
+    <section className="file-list" aria-label="Merge queue">
       <header className="file-list__header">
         <h2 className="file-list__title">Queue</h2>
         <p className="file-list__summary">
@@ -80,6 +80,7 @@ export function FileList({ items, onReorder, onRemove, disabled }: FileListProps
                 {item.error
                   ? item.error
                   : [
+                      item.fileKind.toUpperCase(),
                       item.pageCount != null
                         ? `${item.pageCount} page${item.pageCount === 1 ? '' : 's'}`
                         : null,

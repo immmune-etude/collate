@@ -6,16 +6,34 @@ export type PdfMeta = {
   name: string
   size: number
   pageCount: number | null
+  fileKind: 'pdf' | 'jpeg'
   error?: string
 }
 
-export async function getPdfPageCount(file: File): Promise<number> {
-  const bytes = await file.arrayBuffer()
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true })
-  return doc.getPageCount()
+function isPdfFile(file: File): boolean {
+  return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 }
 
-export async function mergePdfs(
+function isJpegFile(file: File): boolean {
+  const lower = file.name.toLowerCase()
+  return file.type === 'image/jpeg' || lower.endsWith('.jpg') || lower.endsWith('.jpeg')
+}
+
+export async function getFilePageCount(file: File): Promise<number> {
+  if (isPdfFile(file)) {
+    const bytes = await file.arrayBuffer()
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true })
+    return doc.getPageCount()
+  }
+
+  if (isJpegFile(file)) {
+    return 1
+  }
+
+  throw new Error('Unsupported file type')
+}
+
+export async function mergeFiles(
   files: File[],
   onProgress?: (completed: number, total: number) => void,
 ): Promise<Uint8Array> {
@@ -26,14 +44,29 @@ export async function mergePdfs(
   const merged = await PDFDocument.create()
 
   for (let i = 0; i < files.length; i++) {
-    const bytes = await files[i].arrayBuffer()
-    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true })
-    const indices = doc.getPageIndices()
-    const pages = await merged.copyPages(doc, indices)
-    for (const page of pages) {
-      merged.addPage(page)
+    const file = files[i]
+    const bytes = await file.arrayBuffer()
+
+    if (isPdfFile(file)) {
+      const doc = await PDFDocument.load(bytes, { ignoreEncryption: true })
+      const indices = doc.getPageIndices()
+      const pages = await merged.copyPages(doc, indices)
+      for (const page of pages) {
+        merged.addPage(page)
+      }
+      onProgress?.(i + 1, files.length)
+      continue
     }
-    onProgress?.(i + 1, files.length)
+
+    if (isJpegFile(file)) {
+      const image = await merged.embedJpg(bytes)
+      const page = merged.addPage([image.width, image.height])
+      page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height })
+      onProgress?.(i + 1, files.length)
+      continue
+    }
+
+    throw new Error(`Unsupported file type: ${file.name}`)
   }
 
   return merged.save()
