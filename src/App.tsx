@@ -18,6 +18,7 @@ export default function App() {
   const [mergeState, setMergeState] = useState<MergeState>({ status: 'idle' })
 
   const busy = mergeState.status === 'merging'
+  const validCount = items.filter((i) => !i.error).length
 
   const onFilesAdded = useCallback((incoming: PdfMeta[]) => {
     setItems((prev) => [...prev, ...incoming])
@@ -77,9 +78,17 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="atmosphere" aria-hidden="true" />
+      <div className="atmosphere" aria-hidden="true">
+        <span className="blob blob--blue" />
+        <span className="blob blob--magenta" />
+        <span className="blob blob--violet" />
+      </div>
 
       <header className="hero">
+        <div className="orbit" aria-hidden="true">
+          <span className="orbit__ring" />
+          <span className="orbit__core" />
+        </div>
         <h1 className="brand">PDF Merger</h1>
       </header>
 
@@ -107,11 +116,11 @@ export default function App() {
               type="button"
               className="btn btn--primary"
               onClick={() => void handleMerge()}
-              disabled={busy || items.every((i) => i.error)}
+              disabled={busy || validCount === 0}
             >
               {busy
                 ? `Merging ${mergeState.status === 'merging' ? `${mergeState.completed}/${mergeState.total}` : '…'}`
-                : `Merge ${items.filter((i) => !i.error).length} file${items.filter((i) => !i.error).length === 1 ? '' : 's'}`}
+                : `Merge ${validCount} file${validCount === 1 ? '' : 's'}`}
             </button>
           </div>
         )}
